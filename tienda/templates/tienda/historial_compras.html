@@ -1,0 +1,22 @@
+{% extends 'tienda/inicio.html' %}
+
+{% block content %}
+    <h2 class="text-center">🧾 Historial de compras</h2>
+
+    {% if compras %}
+        <div class="list-group">
+            {% for compra in compras %}
+                <div class="list-group-item">
+                    <h5>Compra realizada el {{ compra.fecha|date:"d/m/Y H:i" }}</h5>
+                    <ul>
+                        {% for producto in compra.productos.all %}
+                            <li>{{ producto.nombre }} - ${{ producto.precio }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tienes compras registradas.</p>
+    {% endif %}
+{% endblock %}

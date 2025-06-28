@@ -1,0 +1,56 @@
+{% extends "inicio.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-success">¡Gracias por tu compra!</h2>
+    <p class="text-center">Tu pedido ha sido procesado con éxito el {{ compra.fecha|date:"d/m/Y H:i" }}.</p>
+
+    <h4 class="mt-4">Resumen de tu compra:</h4>
+    <table class="table table-bordered table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% with total=0 %}
+            {% for producto_comprado in productos_comprados %}
+                {% with subtotal=producto_comprado.producto.precio|floatformat:2|floatformat:"g"|add:"0"|floatformat:"g" %}
+                <tr>
+                    <td>{{ producto_comprado.producto.nombre }}</td>
+                    <td>{{ producto_comprado.cantidad }}</td>
+                    <td>${{ producto_comprado.producto.precio|floatformat:2 }}</td>
+                    <td>
+                        ${{ producto_comprado.producto.precio|floatformat:2|floatformat:"g"|add:"0"|floatformat:"g"|floatformat:"g"|floatformat:"g"|add:producto_comprado.cantidad|floatformat:2 }}
+                    </td>
+                </tr>
+                {% endwith %}
+            {% endfor %}
+            {% endwith %}
+        </tbody>
+    </table>
+
+    <div class="text-end">
+        <h5>
+            Total de tu compra: 
+            $
+            {% with total=0 %}
+                {% for producto_comprado in productos_comprados %}
+                    {% with sub=producto_comprado.producto.precio|floatformat:2|floatformat:"g"|add:"0"|floatformat:"g" %}
+                        {% with total=total|add:producto_comprado.producto.precio|add:producto_comprado.cantidad %}
+                        {% endwith %}
+                    {% endwith %}
+                {% endfor %}
+                {{ total|floatformat:2 }}
+            {% endwith %}
+        </h5>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'lista_productos' %}" class="btn btn-primary">Seguir comprando</a>
+    </div>
+</div>
+{% endblock %}

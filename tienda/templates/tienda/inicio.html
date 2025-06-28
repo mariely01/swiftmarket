@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Swift Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(to right, #301934, #1a1a2e);
+            color: #f7d1ff;
+            font-family: 'Outfit', sans-serif;
+            padding-top: 80px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            color: #f7c1ff;
+            font-family: 'Great Vibes', cursive;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .card {
+            background-color: #44255b;
+            border: 1px solid #e0c1ff;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 20px;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0px 0px 15px #f7c1ff;
+        }
+
+        .card-img-top {
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            color: #fbe4ff;
+        }
+
+        .btn-custom {
+            background-color: #f06292;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-custom:hover {
+            background-color: #ec407a;
+        }
+
+        .header {
+            background-color: #3a0ca3;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(247, 193, 255, 0.4);
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .social-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .social-buttons a {
+            color: white;
+            font-size: 2.5rem;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+
+        .social-buttons a:hover {
+            color: #f7c1ff;
+        }
+
+        .comments-section {
+            background-color: #2f2f57;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .comments-section .form-control {
+            background-color: #2b2d42;
+            color: white;
+            border: 1px solid #f7c1ff;
+        }
+
+        .comments-section .btn-custom {
+            background-color: #3a0ca3;
+            border-radius: 20px;
+        }
+
+        .comments-list {
+            margin-top: 20px;
+            color: #e0c1ff;
+        }
+
+        .comment {
+            background-color: #1a1a2e;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .btn-inicio-fixed {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            background-color: #f06292;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: background-color 0.3s;
+        }
+
+        .btn-inicio-fixed:hover {
+            background-color: #ec407a;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'inicio' %}" class="btn-inicio-fixed">🏠 Inicio</a>
+
+    <div class="container fade-in">
+        <header class="text-center header">
+            <h1>✨ Bienvenid@ a Swift Market 💖</h1>
+            <p>Tu lugar favorito para comprar cosas lindas 🌸</p>
+
+            {% if user.is_authenticated %}
+                <p>Hola, {{ user.username }}! 
+                    <a href="{% url 'logout' %}" class="btn btn-custom">Cerrar sesión</a>
+                    <a href="{% url 'historial_compras' %}" class="btn btn-custom">🧾 Historial de compras</a>
+                </p>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-custom">Iniciar sesión</a>
+            {% endif %}
+        </header>
+
+        <form method="GET" action="{% url 'buscar_productos' %}" class="text-center mb-4">
+            <input type="text" name="q" placeholder="Buscar productos..." value="{{ request.GET.q }}" class="form-control w-50 d-inline-block">
+            <button type="submit" class="btn btn-custom">Buscar</button>
+        </form>
+
+        {% block content %}
+        <main>
+            <h2 class="text-center mb-4">Nuestros Productos 🛒</h2>
+            <div class="row">
+                {% for producto in productos %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            {% if producto.imagen %}
+                                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                            {% else %}
+                                <img src="{% static 'tienda/default.jpg' %}" class="card-img-top" alt="Imagen predeterminada">
+                            {% endif %}
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ producto.nombre }}</h5>
+                                <p class="card-text">{{ producto.descripcion }}</p>
+                                <p class="card-text">💸 Precio: ${{ producto.precio }}</p>
+                                <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-custom">💵 Agregar al carrito</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </main>
+
+        <div class="social-buttons">
+            <h3>Síguenos en nuestras redes sociales:</h3>
+            <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-square"></i></a>
+            <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter-square"></i></a>
+            <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://pinterest.com" target="_blank"><i class="fab fa-pinterest-square"></i></a>
+        </div>
+
+        <div class="comments-section">
+            <h3>¡Déjanos tu comentario! 📝</h3>
+            <form method="POST" action="{% url 'comentar' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="comentario" class="form-label">Tu comentario:</label>
+                    <textarea class="form-control" id="comentario" name="comentario" rows="4" placeholder="Escribe tu comentario aquí..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-custom">Enviar Comentario</button>
+            </form>
+
+            <div class="comments-list">
+                <h4>Comentarios recientes:</h4>
+                {% for comentario in comentarios %}
+                    <div class="comment">
+                        <p><strong>{{ comentario.usuario }}</strong> dice:</p>
+                        <p>{{ comentario.texto }}</p>
+                    </div>
+                {% empty %}
+                    <p>No hay comentarios aún. Sé el primero en comentar.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
