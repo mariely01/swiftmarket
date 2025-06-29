@@ -19,8 +19,8 @@ Este proyecto está diseñado para ofrecer una experiencia de compra sencilla y 
 
 ## Tecnologías usadas
 
--Phyton 
--HTML
--CSS
--SQLite
--Django
+Phyton 
+HTML
+CSS
+SQLite
+Django
